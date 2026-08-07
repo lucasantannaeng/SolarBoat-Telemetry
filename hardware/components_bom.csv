@@ -1,0 +1,11 @@
+Component,Technical Specification,Quantity,Unit Mass (kg),Total Mass (kg),Apparent Weight (kgf),System Function
+Stilling-Well Pipe,PVC Pipe Ø100 mm x 30 cm (Ø6-8 mm perforations),1,0.12222,0.12222,0.12222,Local mechanical filtering of sloshing & water level stabilization
+Anti-Sloshing Baffles,PVC Plates 1000x200x4 mm (Ø10 mm matrix holes),2,1.11205,2.22411,2.22411,Global kinetic energy dissipation of water movement in bilge
+Bilge Pump,Seaflo 500 GPH 12V DC Submersible Bilge Pump,1,0.37000,0.37000,0.37000,Primary water drainage actuator
+Ultrasonic Sensor,HC-SR04 Module (40 kHz ToF 2cm - 400cm),1,0.00300,0.00300,0.00300,Non-intrusive water level distance sensing
+Microcontroller,ESP32 ESP-WROOM-32 32-bit Dual-Core MCU,1,0.01000,0.01000,0.01000,Central processing unit & control decision logic
+Relay Module,1-Channel 5V/12V Relay with Optocoupler,1,0.01500,0.01500,0.01500,Power switching interface for bilge pump
+Emergency Float Switch,N/O Mechanical Water Level Switch,1,0.02500,0.02500,0.02500,Redundant fail-safe emergency override
+Wiring & Connectors,Marine-grade tinned copper wire + connectors,1,0.05000,0.05000,0.05000,Electrical interconnections & signal routing
+Strainer (Suction Filter),Pump intake strainer base,1,0.05000,0.05000,0.05000,Solid debris filtration for pump impeller protection
+TOTAL EMBARKED SYSTEM,-,-,-,2.87933 kg,2.87933 kgf,Impact of ~0.79% on 360 kg vessel total displacement

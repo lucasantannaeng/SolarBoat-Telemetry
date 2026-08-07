@@ -1,0 +1,31 @@
+# PlatformIO & Embedded Build Artifacts
+.pio/
+.pioenvs/
+.piolibdeps/
+build/
+dist/
+out/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+
+# IDE & Editor Files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Compiled Binaries & Temporary Files
+*.elf
+*.bin
+*.hex
+__pycache__/
+*.pyc
+.cache/
