@@ -1,140 +1,131 @@
-# 🚤 SolarBoat-Telemetry: Smart Bilge Drainage System
+# 🚤 SolarBoat-Telemetry: Smart Bilge Drainage & Wireless Telemetry System
 
-[![PlatformIO Build](https://github.com/lucasantannaeng/SolarBoat-Telemetry/actions/workflows/platformio-build.yml/badge.svg)](https://github.com/lucasantannaeng/SolarBoat-Telemetry/actions)
+[![PlatformIO Build](https://img.shields.io/badge/PlatformIO-ESP32%20Build-orange?logo=platformio&logoColor=white)](https://platformio.org/)
+[![C++17](https://img.shields.io/badge/Language-C%2B%2B17-00599C?logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
+[![Microcontroller](https://img.shields.io/badge/Hardware-ESP32--WROOM--32-blue.svg)](https://www.espressif.com/en/products/socs/esp32)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Microcontroller](https://img.shields.io/badge/Microcontroller-ESP32-blue.svg)](https://www.espressif.com/en/products/socs/esp32)
 [![Institution](https://img.shields.io/badge/IFF-Campus%20Cabo%20Frio-green.svg)](https://www.iff.edu.br)
 
 > **Bachelor Thesis in Mechanical Engineering** presented to the **Instituto Federal de Educação, Ciência e Tecnologia Fluminense (IFF) - Campus Cabo Frio** (2025).
 
 ---
 
-## 📌 Author & Academic Supervision
+## 📌 Author & Academic Information
 
-- **Author:** Luca Rodrigues Gomes de Sant'Anna ([@lucasantannaeng](https://github.com/lucasantannaeng))
-- **Advisor:** Prof. Fernando Antonio Trindade Campos, M.Sc.
-- **Evaluation Board:** Prof. Flávio Félix Feliciano, D.Sc. & Prof. Josinira Antunes de Amorim, D.Sc.
-- **Institution:** Instituto Federal Fluminense (IFF) - Campus Cabo Frio
-- **Domain:** Naval Architecture / Mechanical Engineering / Embedded Systems & IoT
+* **Author:** Luca Rodrigues Gomes de Sant'Anna ([@lucasantannaeng](https://github.com/lucasantannaeng))
+* **Advisor:** Prof. Fernando Antonio Trindade Campos, M.Sc.
+* **Evaluation Board:** Prof. Flávio Félix Feliciano, D.Sc. & Prof. Josinira Antunes de Amorim, D.Sc.
+* **Institution:** Instituto Federal Fluminense (IFF) - Campus Cabo Frio
+* **Field:** Naval Architecture, IoT Telemetry, Fluid Mechanics & Embedded Systems
 
 ---
 
-## 🌊 Project Overview
+## 🌊 Overview & Engineering Challenge
 
-In light solar-powered vessels (such as those competing in the **Desafio Solar Brasil - DSB**), accidental water accumulation in the bilge increases hydrodynamic drag, compromises metacenter height ($\overline{GM}$), and risks damaging sensitive motor drive electronics.
+In lightweight solar-powered competition vessels (e.g., *Desafio Solar Brasil - DSB*), accidental bilge water accumulation introduces severe parasitic drag, lowers metacenter height ($\overline{GM}$), and risks short-circuiting low-voltage drive inverters.
 
-Conventional bilge systems relying solely on mechanical float switches operate reactively and are highly prone to false triggering or jamming caused by wave-induced liquid motion (*sloshing*).
+Conventional bilge systems relying solely on mechanical float switches are notoriously prone to false triggering or jamming caused by hull slamming and wave-induced liquid motion (*sloshing*).
 
-**SolarBoat-Telemetry** implements a **hybrid engineering solution (mechanical + electronic)**:
-1. **Global Hydrodynamic Damping (Baffles):** PVC deflector plates ($1000\times 200\times 4\text{ mm}$) that dissipate fluid kinetic energy and suppress wave resonance in the bilge.
-2. **Local Mechanical Filtering (Stilling-Well):** A Ø100 mm PVC calm well with Ø6--8 mm equalization holes that dampens surface turbulence, providing a flat water level for acoustic sensing.
-3. **Intelligent Ultrasonic Sensing (HC-SR04 + ESP32):** Non-intrusive Time-of-Flight (ToF) measurement featuring a 5-sample simple moving average filter and an operational **hysteresis window** ($9\text{ cm}$ turn ON / $3\text{ cm}$ turn OFF).
-4. **Hardware Fail-Safe (Emergency Float Switch Override):** Direct priority override via GPIO pull-up to prevent vessel flooding in case of sensor or firmware faults.
+**SolarBoat-Telemetry** implements an integrated mechanical-electronic solution:
+1. **Deflector Baffles:** Dissipate bulk liquid kinetic energy and suppress longitudinal sloshing inside the hull.
+2. **Calming Well (Stilling-Well):** A $\varnothing 100\text{ mm}$ tube with $\varnothing 6\text{--}8\text{ mm}$ equalization ports acting as a low-pass hydraulic filter.
+3. **Non-Blocking Firmware with Hysteresis:** Ultrasonic Time-of-Flight (HC-SR04) with moving average filtering and an operational hysteresis loop ($9\text{ cm}$ ON / $3\text{ cm}$ OFF).
+4. **Wireless UDP Telemetry (1 Hz):** High-speed binary broadcast (`TelemetryPacket`) over local Wi-Fi Access Point to ground station telemetry dashboards.
+5. **Hardware Watchdog Timer (`esp_task_wdt`):** Autonomous 10-second fail-safe reboot to eliminate system lockups in harsh marine environments.
+6. **Hardware Fail-Safe:** Mechanical float switch priority interrupt for dry-run and emergency flood protection.
 
 ---
 
 ## 🏗️ Repository Architecture
 
-```text
+```
 SolarBoat-Telemetry/
-├── .github/
-│   └── workflows/
-│       └── platformio-build.yml        # CI/CD automated firmware compilation workflow
-├── .gitignore                         # Strict DevSecOps rules preventing secret leaks
-├── LICENSE                            # MIT Open-Source License
-├── README.md                          # Master English documentation
-├── docs/                              # Detailed academic & engineering documentation
-│   ├── TCC_DOCUMENTO_FINAL.pdf        # Complete thesis manuscript in PDF (63 pages)
-│   ├── ABSTRACT.md                    # English Abstract & Portuguese Resumo
-│   ├── THESIS_CHAPTERS_SUMMARY.md     # Chapter-by-chapter synthesis (Chapters 1 to 6)
-│   ├── CALCULATIONS_AND_DIMENSIONING.md# Fluid dynamics math, mass tables & hysteresis
-│   └── ELECTRICAL_SCHEMATIC.md        # Circuit diagram & ESP32 pinout mapping
-├── firmware/                          # ESP32 Embedded C++ Firmware
-│   ├── platformio.ini                 # PlatformIO build configuration
+├── firmware/
+│   ├── platformio.ini              # PlatformIO environment & toolchain config
 │   ├── include/
-│   │   └── config.h                   # Pinout mapping, parameters & threshold constants
+│   │   └── config.h                # Hardware pinouts, TelemetryPacket & hysteresis thresholds
 │   ├── src/
-│   │   └── main.cpp                   # Main C++ modular firmware
+│   │   └── main.cpp                # Non-blocking C++ event loop with watchdog & UDP telemetry
 │   └── src_arduino/
-│       └── firmware.ino               # Standalone Arduino IDE sketch (Appendix A)
-└── hardware/                          # Mechanical Specs & Bill of Materials
-    ├── components_bom.csv             # Bill of Materials (BOM) with component masses
-    ├── stilling_well_spec.md          # Technical specifications for Ø100mm PVC Stilling-Well
-    └── baffles_spec.md                # Technical specifications for Anti-Sloshing Baffles
+│       └── firmware.ino            # Standalone Arduino IDE sketch
+├── docs/
+│   ├── TCC_DOCUMENTO_FINAL.pdf     # Full 63-page Bachelor Thesis manuscript
+│   ├── ABSTRACT.md                 # English Abstract and Portuguese Resumo
+│   ├── THESIS_CHAPTERS_SUMMARY.md  # Synthesis of Chapters 1 through 6
+│   ├── CALCULATIONS_AND_DIMENSIONING.md # Fluid dynamics math, mass tables & hysteresis
+│   └── ELECTRICAL_SCHEMATIC.md     # Circuit diagram & ESP32 pinout mapping
+├── hardware/                       # Mechanical specifications & Bill of Materials
+├── LICENSE
+└── README.md
 ```
 
 ---
 
-## 🔌 Circuit Pinout & Wiring (ESP32)
+## 🔌 ESP32 Pinout & Telemetry Payload
 
-| Peripheral Device | Pin Name | ESP32 GPIO Pin | Description |
-| :--- | :--- | :--- | :--- |
-| **HC-SR04 Ultrasonic**| Trigger | **GPIO 5** | $10\,\mu\text{s}$ sampling pulse |
-| **HC-SR04 Ultrasonic**| Echo | **GPIO 18** | Time-of-flight echo signal ($3.3\text{V}$) |
-| **Float Switch** | N/O Terminal | **GPIO 19** | `INPUT_PULLUP` (Emergency level = LOW) |
-| **Relay Module** | Input (IN) | **GPIO 4** | Active LOW relay trigger |
+### GPIO Mapping
 
-```text
-                       +-----------------------------+
-                       |   ESP32 Microcontroller     |
-                       |                             |
-  [HC-SR04] Trigger <--- GPIO 5                      |
-  [HC-SR04] Echo    ---> GPIO 18                     |
-  [Float Switch]    ---> GPIO 19 (Internal Pull-Up)  |
-  [Relay Module]    <--- GPIO 4  (Active LOW)        |
-                       +-----------------------------+
+| Pin | Peripheral | Purpose |
+| :--- | :--- | :--- |
+| **GPIO 5** | HC-SR04 Trigger | Ultrasonic Pulse Emitter (10 µs trigger) |
+| **GPIO 18** | HC-SR04 Echo | Pulse-width Time-of-Flight Receiver |
+| **GPIO 19** | Float Switch | Emergency Mechanical Override (`INPUT_PULLUP`) |
+| **GPIO 4** | Relay Module | Bilge Pump Power Actuation (Active LOW) |
+| **GPIO 34** | ADC Divider | Battery Bank Voltage Monitoring (0-16V scale) |
+
+### Telemetry Packet Structure (Binary UDP)
+
+```cpp
+struct __attribute__((packed)) TelemetryPacket {
+    uint32_t uptimeMs;          // System uptime in milliseconds
+    float waterLevelCm;         // Filtered water level inside calming well (cm)
+    float batteryVoltage;       // Battery bank voltage (V)
+    uint8_t pumpActive;         // 1 = Pump ON, 0 = Pump OFF
+    uint8_t emergencyOverride;  // 1 = Emergency float switch active
+    uint8_t sensorStatus;       // 1 = Acoustic sensor healthy, 0 = Fault/Timeout
+    uint16_t checksum;          // Frame integrity checksum
+};
 ```
 
 ---
 
-## 📐 Summary of Calculations & System Impact
+## ⚡ Firmware Compilation & Flashing
 
-- **Vessel Nominal Displacement:** $360\text{ kg}$
-- **Total System Embarked Mass:** $2.88\text{ kg}$ ($0.79\%$ of displacement)
-- **Stilling-Well Chamber:** Ø100 mm PVC pipe $\times$ 30 cm height (Mass: $0.122\text{ kg}$)
-- **Anti-Sloshing Baffles:** 2 PVC plates $1000\times 200\times 4\text{ mm}$ (Mass: $2.224\text{ kg}$)
-- **Seaflo 500 GPH Pump + Sensors + Cables:** $0.533\text{ kg}$
-- **Hysteresis Operational Thresholds:** 
-  - **Turn ON:** $\ge 9.0\text{ cm}$
-  - **Turn OFF:** $\le 3.0\text{ cm}$
-  - **Hysteresis Band:** $6.0\text{ cm}$ (protects relay & pump from chatter)
+### Using PlatformIO (Recommended)
 
----
-
-## 🚀 How to Build and Flash Firmware
-
-### Option A: Using PlatformIO (Recommended)
 ```bash
-cd firmware
+# Clone the repository
+git clone https://github.com/lucasantannaeng/SolarBoat-Telemetry.git
+cd SolarBoat-Telemetry/firmware
+
+# Compile the firmware
+pio run
+
+# Flash to connected ESP32
 pio run --target upload
+
+# Open Serial Telemetry Monitor (115200 baud)
+pio device monitor
 ```
 
-### Option B: Using Arduino IDE
-1. Navigate to `firmware/src_arduino/` and open `firmware.ino`.
-2. Select **ESP32 Dev Module** under Tools -> Board.
-3. Set Baud Rate to `115200` baud in Serial Monitor.
-4. Compile and upload to ESP32 board.
-
 ---
 
-## 📜 License
+## 📄 Academic Citation
 
-This project is open-source software licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🎓 Academic Citation
-
-If you use this project or reference this work in your research, please cite:
+If you utilize this research or code in your academic or technical work, please cite:
 
 ```bibtex
-@thesis{santanna2025drenagem,
-  author       = {Luca Rodrigues Gomes de Sant'Anna},
-  title        = {Estudo e Desenvolvimento de um Sistema Automatizado de Drenagem de Porão com Mitigação de Sloshing e Acionamento Inteligente Baseado em Sensores Ultrassônicos},
-  school       = {Instituto Federal de Educação, Ciência e Tecnologia Fluminense (IFF) - Campus Cabo Frio},
-  year         = {2025},
-  type         = {Trabalho de Conclusão de Curso (Bacharelado em Engenharia Mecânica)},
-  address      = {Cabo Frio, RJ, Brazil},
-  pages        = {63}
+@mastersthesis{santanna2025solarboat,
+  author    = {Luca Rodrigues Gomes de Sant'Anna},
+  title     = {Sistema Inteligente de Drenagem de Por{\~a}o e Telemetria para Embarca{\c{c}}{\~o}es Solares},
+  school    = {Instituto Federal Fluminense (IFF) - Campus Cabo Frio},
+  year      = {2025},
+  type      = {Trabalho de Conclus{\~a}o de Curso (Gradua{\c{c}}{\~a}o em Engenharia Mec{\^a}nica)}
 }
 ```
+
+---
+
+## 📄 License
+
+Licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
