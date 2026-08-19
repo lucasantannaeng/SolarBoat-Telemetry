@@ -77,13 +77,14 @@ SolarBoat-Telemetry/
 
 ```cpp
 struct __attribute__((packed)) TelemetryPacket {
+    uint32_t sequenceId;        // Packet sequence counter
     uint32_t uptimeMs;          // System uptime in milliseconds
     float waterLevelCm;         // Filtered water level inside calming well (cm)
     float batteryVoltage;       // Battery bank voltage (V)
     uint8_t pumpActive;         // 1 = Pump ON, 0 = Pump OFF
     uint8_t emergencyOverride;  // 1 = Emergency float switch active
     uint8_t sensorStatus;       // 1 = Acoustic sensor healthy, 0 = Fault/Timeout
-    uint16_t checksum;          // Frame integrity checksum
+    uint16_t crc16;             // CRC16-CCITT frame integrity checksum
 };
 ```
 

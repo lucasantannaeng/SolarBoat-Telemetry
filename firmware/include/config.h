@@ -1,6 +1,6 @@
 /**
  * @file config.h
- * @brief Hardware pinout definitions, constants, hysteresis calibration and telemetry packet structure
+ * @brief Hardware pinout definitions, constants, hysteresis calibration, median filter and telemetry packet
  * @author Luca Rodrigues Gomes de Sant'Anna
  * @institution Instituto Federal Fluminense (IFF) - Campus Cabo Frio
  * @project SolarBoat-Telemetry: Smart Bilge Drainage System & Wireless Telemetry
@@ -31,8 +31,9 @@ static const float WATER_LEVEL_PUMP_ON_CM   = 9.0f;   // Turn pump ON when water
 static const float WATER_LEVEL_PUMP_OFF_CM  = 3.0f;   // Turn pump OFF when water level <= 3.0 cm
 
 // --- DIGITAL FILTERING & SAMPLING PARAMETERS ---
-static const int FILTER_SAMPLE_COUNT        = 5;      // Number of samples for simple moving average
-static const unsigned long ECHO_TIMEOUT_US  = 30000;  // pulseIn timeout (30 ms)
+static const int FILTER_SAMPLE_COUNT        = 5;      // Number of samples for in-place median filter
+static const unsigned long ECHO_TIMEOUT_US  = 12000;  // pulseIn timeout (12 ms -> ~2 meters maximum range)
+static const int FLOAT_DEBOUNCE_THRESHOLD   = 3;      // Consecutive samples required for float switch trigger
 
 // --- NON-BLOCKING SCHEDULING & WATCHDOG CONFIG ---
 static const unsigned long SENSOR_INTERVAL_MS    = 500;   // Sensor sampling interval (ms)
@@ -45,13 +46,15 @@ static const uint32_t WATCHDOG_TIMEOUT_SECONDS   = 10;    // Hardware WDT timeou
 
 // Telemetry payload structure (packed for efficient wireless transmission)
 struct __attribute__((packed)) TelemetryPacket {
+    uint32_t sequenceId;
     uint32_t uptimeMs;
+    uint32_t bootCount;
     float waterLevelCm;
     float batteryVoltage;
     uint8_t pumpActive;
     uint8_t emergencyOverride;
     uint8_t sensorStatus; // 1 = OK, 0 = Sensor Fault/Timeout
-    uint16_t checksum;
+    uint16_t crc16;
 };
 
 #endif // CONFIG_H
